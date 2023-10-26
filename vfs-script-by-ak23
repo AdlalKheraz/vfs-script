@@ -1,3 +1,7 @@
+// Ce script est un utilisateur Tampermonkey pour automatiser la soumission de formulaires sur le site VFS Global.
+
+// Définition de plusieurs profils avec des informations personnelles
+
 // ==UserScript==
 // @name Vfs France alert
 // @namespace http://tampermonkey.net/
@@ -6,6 +10,7 @@
 // @author ak23
 // @match https://online.vfsglobal.dz/*
 // ==/UserScript==
+
 
 var profiles = [
   {
@@ -34,6 +39,8 @@ var profiles = [
   }
 ];
 
+// Informations de connexion
+
 var email = "hello@hotmail.com";
 var pwd = "mot de passe";
 var phone = "543852***";
@@ -41,6 +48,8 @@ var gender = ['', 'Male', 'Female']; // 1 masculin, 2 Feminin
 var visaType = 982; // Type de visa (782 Court séjour - 874 Court séjour renouvellement -  982 Student)
 
 var intervalle = 30; // Intervalle en secondes pour rafraîchir la page et sélectionner le type de visa
+
+// Cette fonction remplit le formulaire avec les informations du profil sélectionné
 
 function setForm(profile) {
   document.title = profile.prenom + ' ' + profile.nom;
@@ -70,19 +79,25 @@ function setForm(profile) {
   }
 }
 
+// Cette fonction ajoute des boutons pour chaque profil dans la barre latérale
+
 function addButton(profile, index) {
   $('#sidebar').append('<button type="button" style="width: 100%; height: 50px;background-color:#03b131;border:0;font-size: 1.4em;margin-bottom: 10px;color:#fff;" id="Pro' + (index + 1) + '">' + profile.name + '</button>');
 }
+
+// Ajoute des liens dans le menu de gauche (peut nécessiter des ajustements)
 
 (function() {
   'use strict';
   $('.leftNav-ul').append('<li class="inactive-link"><a href="/Global-Appointment/Calendar/FinalCalendar">under configuration to Calendrie</a>');
 })();
 
+// Ajoute des boutons pour chaque profil
 
 $('#sidebar').append('<hr>');
 profiles.forEach(addButton);
 
+// Les boutons ajoutés dans la barre latérale permettent de remplir le formulaire avec les données du profil correspondant
 
 $('#sidebar').on('click', '#Pro1', function() {
   setForm(profiles[0]);
@@ -93,6 +108,8 @@ $('#sidebar').on('click', '#Pro2', function() {
   setForm(profiles[1]);
 });
 
+// Cette fonction ajuste le design de la page (peut nécessiter des ajustements)
+
 function shiftDesign() {
   $('body').prepend('<h5 id="Alert" style="color: red; text-align: center; text-transforme: uppercase,background-color: teal;">Aucune Notfication</h5>');
   $('#header-title').css('margin', '2px');
@@ -101,14 +118,20 @@ function shiftDesign() {
   $('.MsoNormal').hide();
 }
 
+// Remplit les champs d'adresse e-mail et mot de passe si présents
+
 (function() {
   if ($('#EmailId').length && $('#Password').length) {
     $('#EmailId').val(email);
     $('#Password').val(pwd);
   }
+  // Rafraîchit automatiquement la sélection du type de visa à intervalles réguliers
+
   var refresh = setInterval(function() {
     $('#VisaCategoryId').val(visaType).change();
   }, intervalle * 1000);
+
+  // Si une date est affichée, arrête le rafraîchissement, parle un message et peut potentiellement déclencher un clic
 
   if ($('#lblDate').text() != '') {
     clearInterval(refresh);
