@@ -1,0 +1,119 @@
+// ==UserScript==
+// @name Vfs France alert
+// @namespace http://tampermonkey.net/
+// @version 1.0
+// @description try to take over VFS!
+// @author ak23
+// @match https://online.vfsglobal.dz/*
+// ==/UserScript==
+
+var profiles = [
+  {
+    name: "personne",
+    numPass: "306766899",
+    dateN: "28/10/2000",
+    expPass: "16/01/2031",
+    prenom: "prenom",
+    nom: "nom",
+    genre: 1,
+    visaNum: "",
+    visaPlace: "",
+    visaDur: ""
+  },
+  {
+    name: "personne 2",
+    numPass: "4444",
+    dateN: "10/04/4444",
+    expPass: "22/07/333",
+    prenom: "prenom",
+    nom: "nom",
+    genre: 2,
+    visaNum: "",
+    visaPlace: "",
+    visaDur: ""
+  }
+];
+
+var email = "hello@hotmail.com";
+var pwd = "mot de passe";
+var phone = "543852***";
+var gender = ['', 'Male', 'Female']; // 1 masculin, 2 Feminin
+var visaType = 982; // Type de visa (782 Court séjour - 874 Court séjour renouvellement -  982 Student)
+
+var intervalle = 30; // Intervalle en secondes pour rafraîchir la page et sélectionner le type de visa
+
+function setForm(profile) {
+  document.title = profile.prenom + ' ' + profile.nom;
+  $("#PassportNumber").val(profile.numPass);
+  $("#FirstName").val(profile.prenom);
+  $("#LastName").val(profile.nom);
+  $("#DateOfBirth").val(profile.dateN);
+  $("#PassportExpiryDate").val(profile.expPass);
+  $("#NationalityId option:contains('ALGERIA')").attr('selected', 'selected');
+  $("#GenderId option:contains('" + gender[profile.genre] + "')").attr('selected', 'selected');
+  if ($('#VisaNumber').length) {
+    $('#VisaNumber').val(profile.visaNum);
+  }
+  if ($('#PlaceOfIssuance').length) {
+    $('#PlaceOfIssuance').val(profile.visaPlace);
+  }
+  if ($('#Duartion').length) {
+    $('#Duartion').val(profile.visaDur);
+  }
+  if ($('#Mobile').length) {
+    $('#Mobile').val(phone);
+  }
+  if ($('#txtPassport').length) {
+    $("#AURN").val("");
+    $("#txtPassport").val(profile.numPass);
+    $("#PrimaryEmailId").val(email);
+  }
+}
+
+function addButton(profile, index) {
+  $('#sidebar').append('<button type="button" style="width: 100%; height: 50px;background-color:#03b131;border:0;font-size: 1.4em;margin-bottom: 10px;color:#fff;" id="Pro' + (index + 1) + '">' + profile.name + '</button>');
+}
+
+(function() {
+  'use strict';
+  $('.leftNav-ul').append('<li class="inactive-link"><a href="/Global-Appointment/Calendar/FinalCalendar">under configuration to Calendrie</a>');
+})();
+
+
+$('#sidebar').append('<hr>');
+profiles.forEach(addButton);
+
+
+$('#sidebar').on('click', '#Pro1', function() {
+  setForm(profiles[0]);
+});
+
+
+$('#sidebar').on('click', '#Pro2', function() {
+  setForm(profiles[1]);
+});
+
+function shiftDesign() {
+  $('body').prepend('<h5 id="Alert" style="color: red; text-align: center; text-transforme: uppercase,background-color: teal;">Aucune Notfication</h5>');
+  $('#header-title').css('margin', '2px');
+  $('.header').height('40px');
+  $('.logo').hide();
+  $('.MsoNormal').hide();
+}
+
+(function() {
+  if ($('#EmailId').length && $('#Password').length) {
+    $('#EmailId').val(email);
+    $('#Password').val(pwd);
+  }
+  var refresh = setInterval(function() {
+    $('#VisaCategoryId').val(visaType).change();
+  }, intervalle * 1000);
+
+  if ($('#lblDate').text() != '') {
+    clearInterval(refresh);
+    var msgTxt = new SpeechSynthesisUtterance('Rdv France disponible Rdv France disponible Rdv France disponible Rdv France disponible Rdv France disponible Rdv France disponible');
+    window.speechSynthesis.speak(msgTxt);
+    // $('#btnContinue').click();
+  }
+})();
